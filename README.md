@@ -14,25 +14,29 @@ Non-fluents
 
 	real rew_el (?p) 
 	
-	is a reward for every eliminated pest of type ?p.
+is a reward for every eliminated pest of type ?p.
 
 	real rew_ex  
 	
-	is a reward for exploring an area that has not been previously visited by a swarm.
+is a reward for exploring an area that has not been previously visited by a swarm.
 
 	bool neighbours(?l, ?l1) 
 	
-	determines whether it is possible for a swarm to travel between ?l1 and ?l .
+determines whether it is possible for a swarm to travel between ?l1 and ?l .
 
 State-fluents
 
-	bool p_found (?p, ?l) determines if a pest-type ?p is found on location ?l. Can be true only if a swarm is in the area ?l and only with a specific probability.
+	bool p_found (?p, ?l) 
+determines if a pest-type ?p is found on location ?l. Can be true only if a swarm is in the area ?l and only with a specific probability.
 
-	int drones_in(?s) is the amount of drones in swarm ?s. Gets lower when a swarm eliminates a target. Can’t be less than 0.
+	int drones_in(?s) 
+is the amount of drones in swarm ?s. Gets lower when a swarm eliminates a target. Can’t be less than 0.
 
-	bool swarm_at(?s, ?l) determines if a swarm ?s is on the area ?l.
+	bool swarm_at(?s, ?l) 
+determines if a swarm ?s is on the area ?l.
 
-	real prob(?p, ?l) represents the probability of finding pest ?p on area ?l (assuming there is a swarm at ?l).
+	real prob(?p, ?l) 
+represents the probability of finding pest ?p on area ?l (assuming there is a swarm at ?l).
 
 Action-fluents
 
