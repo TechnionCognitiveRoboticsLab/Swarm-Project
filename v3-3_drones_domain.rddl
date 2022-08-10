@@ -1,0 +1,63 @@
+domain v3-3_drones_domain{
+// A number drones devided on swarms is sent to patrol over a rectangular field. Each swarm consist of numerous drones and if it flies
+// over a pest on the field then it can use up one of its' drones to eliminate the pest. Pests may be of 4 kinds: low-level, mid-level, high-level 
+// and protected animals. The reward for eliminatng a pest is higher if the pest's level is higher and is negative if a protected animal is eliminated.
+// swarms can't exit the field. There is no time limit. The amount of pests of each type is a unknown.
+
+	
+	requirements = { concurrent, integer-valued, reward-deterministic, multivalued, constrained-state };
+	
+	types{
+		location : object;
+		swarm : object;
+		pest  : { @low_level, @mid_level, @high_level, @animal };
+	};
+	
+	pvariables{  
+		
+		//non-fluents:
+		neighbours(location,location) : { non-fluent, bool, default = false };              
+		rew_el(pest)                 : { non-fluent, real, default = 0     }; // A reward for eliminating a pest of a kind (or a negative reward for an animal).
+		rew_ex                       : { non-fluent, real, default = 1     }; //reward for exploring a location of the field.
+		 
+		
+		
+		//state-fluents:
+		
+		drones_in(swarm)              : { state-fluent, int,  default = 5     }; // Number of drones left in the swarm.
+		p_found(pest, location)       : { state-fluent, bool, default = false }; // Indicates if there is a found pest on a location of a field.
+		swarm_at(swarm, location)     : { state-fluent, bool, default = false }; // Indicates if there is a swarm over a certain location. 
+		prob(pest, location)          : { state-fluent, real, default = 0.1   }; // Probability to find a pest of a kind at each location.
+		
+		//action-fluents:
+		
+		move(swarm, location) : { action-fluent, bool, default = false }; 
+		eliminate_pest(swarm) : { action-fluent, bool, default = false }; // If a swarm is above a pest then we can use up a drone to eliminate the pest.
+	};
+	
+	cpfs{
+		
+	drones_in'(?s) = drones_in(?s) - 1 * eliminate_pest(?s);
+	
+	p_found'(?p, ?l) = [exists_{?s : swarm} swarm_at(?s, ?l)] ^ Bernoulli( prob(?p, ?l) );
+	
+	prob'(?p, ?l) = if (exists_{ ?s : swarm } swarm_at(?s, ?l)) then 0 else prob(?p, ?l);
+	
+	swarm_at'(?s, ?l) = [ drones_in(?s) > 0 ] ^ [ forall_{?l1 : location} (move(?s, ?l1) => (?l1 == ?l)) ] ^ 
+						    [ (forall_{?l1 : location} ~move(?s, ?l1)) => swarm_at(?s, ?l)] ;
+
+	};
+	
+	reward = sum_{ ?p : pest, ?l : location} [ rew_el(?p) *  ( p_found( ?p, ?l ) ^ exists_{ ?s : swarm}[swarm_at(?s, ?l) ^ eliminate_pest(?s)]) + 
+						   rew_ex     * (( prob(?p, ?l)~=0 ) ^ exists_{ ?s : swarm}[swarm_at(?s, ?l)]) ]; 
+
+	state-action-constraints {
+		
+		forall_{?s : swarm, ?l : location, ?l1: location } [move(?s, ?l) ^ move(?s, ?l1) => (?l == ?l1)];
+
+		forall_{?s : swarm, ?l : location, ?l1: location }  swarm_at(?s, ?l1)^[~neighbours(?l, ?l1)] => ~move(?s, ?l);
+	
+		forall_{?s: swarm} [(drones_in(?s) == 0) => ~eliminate_pest(?s)];		
+	};
+}
+

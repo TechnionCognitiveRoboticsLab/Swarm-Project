@@ -1,0 +1,58 @@
+non-fluents v3-3_nf_s{
+	
+	domain = v3-3_drones_domain;
+	objects {
+		location : {l11, l12, l13, l21, l22, l23, l31, l32, l33};
+		swarm : {s1, s2, s3};	
+	};
+	
+	non-fluents {
+	
+	neighbours ( l11, l12 ) = true;
+	neighbours ( l11, l21 ) = true;
+	neighbours ( l12, l11 ) = true;
+	neighbours ( l12, l22 ) = true;
+	neighbours ( l12, l13 ) = true;
+	neighbours ( l13, l12 ) = true;
+	neighbours ( l13, l23 ) = true;
+	neighbours ( l21, l11 ) = true;
+	neighbours ( l21, l22 ) = true;
+	neighbours ( l21, l31 ) = true;
+	neighbours ( l22, l12 ) = true;
+	neighbours ( l22, l23 ) = true;
+	neighbours ( l22, l21 ) = true;
+	neighbours ( l22, l32 ) = true;
+	neighbours ( l23, l13 ) = true;
+	neighbours ( l23, l22 ) = true;
+	neighbours ( l23, l33 ) = true;
+	neighbours ( l31, l21 ) = true;
+	neighbours ( l31, l32 ) = true;
+	neighbours ( l32, l31 ) = true;
+	neighbours ( l32, l22 ) = true;
+	neighbours ( l32, l33 ) = true;
+	neighbours ( l33, l32 ) = true;
+	neighbours ( l33, l23 ) = true;
+	
+	
+	rew_el(@low_level) = 5; rew_el(@mid_level) = 10;
+	rew_el(@high_level) = 15; rew_el(@animal) = -10;
+	};
+}
+
+instance v3-3_drones_inst_s{
+	domain = v3-3_drones_domain;
+	non-fluents = v3-3_nf_s;
+	init-state {
+	prob(@low_level, l21) = 0.2; prob(@mid_level, l31) = 0.4;
+	prob(@high_level, l22) = 0.7; prob(@animal,l12) = 0.3 ;
+	prob(@low_level, l23) = 0.5; prob(@mid_level, l22) = 0.3;
+	prob(@high_level, l12) = 0.25; prob(@animal,l11) = 0.2 ;
+	swarm_at(s1, l11);
+	swarm_at(s2, l11);
+	swarm_at(s3, l11);
+	};
+	max-nondef-actions = 3;
+	horizon = 40;
+	discount = 0.9;
+}
+
