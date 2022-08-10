@@ -12,11 +12,17 @@ There are 3 different types in the domain. The type swarm contains objects since
 
 Non-fluents
 
-	real rew_el (?p) is a reward for every eliminated pest of type ?p.
+	real rew_el (?p) 
+	
+	is a reward for every eliminated pest of type ?p.
 
-	real rew_ex  is a reward for exploring an area that has not been previously visited by a swarm.
+	real rew_ex  
+	
+	is a reward for exploring an area that has not been previously visited by a swarm.
 
-	bool neighbours(?l, ?l1) whether it is possible for a swarm to travel between ?l1 and ?l .
+	bool neighbours(?l, ?l1) 
+	
+	determines whether it is possible for a swarm to travel between ?l1 and ?l .
 
 State-fluents
 
