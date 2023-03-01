@@ -1,11 +1,3 @@
-"""
-Search (Chapters 3-4)
-
-The way to use this code is to subclass Problem to create a class of problems,
-then create problem instances and solve them with calls to the various search
-functions.
-"""
-
 import sys
 from collections import deque
 
@@ -390,7 +382,7 @@ class SingleSwarmProblem(Problem):
 
 
 class MultiSwarmProblem(Problem):
-    def __init__(self, HOR, size_x, size_y, pests, probs, max_reward, num_of_drones, num_of_swarms, requirement, gamma):
+    def __init__(self, size_x, size_y, HOR, pests, probs, num_of_drones, num_of_swarms, max_reward, requirement, gamma):
         super().__init__(tuple(tuple('X' for k in range(HOR)) for j in range(num_of_swarms)))
         self.HOR = HOR
         self.size_x = size_x
@@ -458,11 +450,11 @@ class MultiSwarmProblem(Problem):
         return tuple(new_full_state)
 
     def actions_to_areas(self, full_state):
-        areas = [['X' for k in range(self.HOR)]for s in range(self.num_of_swarms)]
+        full_areas = [['X' for k in range(self.HOR)]for s in range(self.num_of_swarms)]
         latest = ['a11' for s in range(self.num_of_swarms)]
         for swarm in range(self.num_of_swarms):
             for time in range(self.HOR):
-                areas[swarm][time] = latest[swarm]
+                full_areas[swarm][time] = latest[swarm]
                 match full_state[swarm][time]:
                     case 'Up':
                         latest[swarm] = list(latest[swarm])
@@ -484,7 +476,8 @@ class MultiSwarmProblem(Problem):
                         latest[swarm] = latest[swarm]
                     case other:  # ('X')
                         break
-        return areas
+
+        return full_areas
 
     def get_prob_of_subset(self, subset, probs):
         '''Taking a look on every possible combination of pests that can be on an area we count
@@ -510,7 +503,7 @@ class MultiSwarmProblem(Problem):
             for pest in subset:
                 reward_for_subset += self.pests[pest]
             prev_reward = reward - reward_for_subset
-            prev_num_of_drones = num_of_drones + len(subset) # or + 1
+            prev_num_of_drones = num_of_drones + 1# len(subset)
             if prev_reward < 0 or prev_num_of_drones >= len(matrix):
                 p = 0
             else:
