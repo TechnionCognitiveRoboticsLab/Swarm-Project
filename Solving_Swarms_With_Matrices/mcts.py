@@ -1,5 +1,7 @@
 import math
 from random import random
+import random
+import numpy
 
 import search
 
@@ -23,7 +25,7 @@ class Node:
         return self.children
 
     def get_uct(self, time, problem):
-        ucb1 = self.value/self.number_of_visits + math.sqrt(2 * math.log(time) / self.number_of_visits)
+        ucb1 = self.value + math.sqrt(2 * math.log(time) / self.number_of_visits)
         return ucb1
 
     def best_uct(self, time, problem):
@@ -47,6 +49,14 @@ class Node:
     def is_terminal(self, problem):
         return problem.goal_test(self.state)
 
+    def depth(self):
+        node = self
+        depth = 0
+        while node.parent is not None:
+            depth += 1
+            node = node.parent
+        return depth
+
 
 def resources_left(time, sims):
     return time <= sims
@@ -60,12 +70,19 @@ def monte_carlo_tree_search(problem, sims):
     while resources_left(time, sims):
         leaf = traverse(problem, node, time)
         simulation_result = rollout(leaf, problem)
-        backpropagate(leaf, simulation_result * (problem.gamma ** (problem.HOR-1)), problem.gamma)
+        backpropagate(leaf, simulation_result * (problem.gamma ** (leaf.depth() - 1)), problem.gamma)
         time += 1
         print("Simulation", time)
+    print()
     node = root
     while not node.is_terminal(problem):
         node = best_child(node)
+    print('Number of simulations: ', sims)
+    print('Number of drones: ', problem.num_of_drones)
+    print('Number of swarms: ', problem.num_of_swarms)
+
+    print(node.state)
+    print("Expected value: ", node.value)
 
 
 def pick_unvisited(children):
@@ -96,14 +113,21 @@ def rollout(node, problem):
     state = node.state
     while not problem.goal_test(state):
         actions = problem.actions(state)
-        action = actions[0]
+        action = get_best_immediate_action(state, problem, actions)
         state = problem.result(state, action)
     return problem.value(state)
 
 
-# function for randomly selecting a child node
-def rollout_policy(node, problem):
-    return node.expand(problem)[0]
+def get_best_immediate_action(state, problem, actions):
+    best_action = random.choice(actions)
+    return best_action
+    best_value = problem.value(problem.result(state, best_action))
+    for action in actions:
+        value = problem.value(problem.result(state, action))
+        if value > best_value:
+            best_action = action
+            best_value = value
+    return best_action
 
 
 def is_root(node):
@@ -112,7 +136,7 @@ def is_root(node):
 
 # function for backpropagation
 def update_stats(node, result):
-    node.value += result
+    node.value = (node.value * node.number_of_visits + result) / (node.number_of_visits + 1)
     node.number_of_visits += 1
 
 
@@ -120,7 +144,7 @@ def backpropagate(node, result, gamma):
     update_stats(node, result)
     if is_root(node):
         return
-    backpropagate(node.parent, result/gamma, gamma)
+    backpropagate(node.parent, result / gamma, gamma)
 
 
 # function for selecting the best child
@@ -133,5 +157,4 @@ def best_child(node):
             most_frequent_child = c
             highest_number_of_visits = c.number_of_visits
     print(most_frequent_child.state)
-    print(most_frequent_child.value)
     return most_frequent_child
