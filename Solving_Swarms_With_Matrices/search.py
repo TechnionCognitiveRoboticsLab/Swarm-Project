@@ -1,3 +1,11 @@
+"""
+Search (Chapters 3-4)
+
+The way to use this code is to subclass Problem to create a class of problems,
+then create problem instances and solve them with calls to the various search
+functions.
+"""
+
 import sys
 from collections import deque
 
@@ -448,6 +456,13 @@ class MultiSwarmProblem(Problem):
             new_full_state[s][now] = act[s]
             new_full_state[s] = tuple(new_full_state[s])
         return tuple(new_full_state)
+
+    def get_expected_reward(self):
+        expectation = 0
+        for pest in self.pests:
+            for area in self.probs:
+                expectation += self.pests[pest] * self.probs[area][pest]
+        return expectation / self.size_x / self.size_y*self.num_of_drones*self.num_of_swarms
 
     def actions_to_areas(self, full_state):
         full_areas = [['X' for k in range(self.HOR)]for s in range(self.num_of_swarms)]
