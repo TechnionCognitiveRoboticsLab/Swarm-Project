@@ -24,8 +24,8 @@ class Node:
         self.children = [self.child_node(problem, action) for action in problem.actions(self.state)]
         return self.children
 
-    def get_uct(self, time, problem):
-        ucb1 = self.value + math.sqrt(2 * math.log(time) / self.number_of_visits)
+    def get_uct(self, time, c):
+        ucb1 = self.value + c*math.sqrt(math.log(time) / self.number_of_visits)
         return ucb1
 
     def best_uct(self, time, problem):
@@ -67,8 +67,9 @@ def monte_carlo_tree_search(problem, sims):
     root.expand(problem)
     node = root
     time = 0
+    ex_constsant = 1/(problem.get_expected_reward()**2)
     while resources_left(time, sims):
-        leaf = traverse(problem, node, time)
+        leaf = traverse(problem, node, time, ex_constsant)
         simulation_result = rollout(leaf, problem)
         backpropagate(leaf, simulation_result * (problem.gamma ** (leaf.depth() - 1)), problem.gamma)
         time += 1
@@ -93,9 +94,9 @@ def pick_unvisited(children):
 
 
 # function for node traversal
-def traverse(problem, node, time):
+def traverse(problem, node, time, c):
     while node.fully_expanded():
-        node = node.best_uct(time, problem)
+        node = node.best_uct(time, c)
     # in case no children are present / node is terminal
     if node.is_terminal(problem):
         return node
