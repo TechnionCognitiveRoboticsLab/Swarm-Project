@@ -1,33 +1,103 @@
 import search
 import mcts
 
+
 # instance_1:
-horizon_1 = 8
-probs_1 = {'a11': {'M': 0.0, 'L': 0},
-           'a12': {'M': 0.0, 'L': 0.3},
-           'a13': {'M': 0.4, 'L': 0.0},
-           'a14': {'M': 0.2, 'L': 0.1},
-           'a21': {'M': 0.0, 'L': 0.3},
-           'a22': {'M': 0.0, 'L': 0.0},
-           'a23': {'M': 0.6, 'L': 0.0},
-           'a24': {'M': 0.3, 'L': 0.5},
-           'a31': {'M': 0.0, 'L': 0.0},
-           'a32': {'M': 0.5, 'L': 0.2},
-           'a33': {'M': 0.0, 'L': 0.3},
-           'a34': {'M': 0.0, 'L': 0.0},
-           'a41': {'M': 0.1, 'L': 0.0},
-           'a42': {'M': 0.0, 'L': 0.2},
-           'a43': {'M': 0.8, 'L': 0.2},
-           'a44': {'M': 0.0, 'L': 0.0}
-           }
-width_1 = 4
-height_1 = 4
-pests_1 = {'M': 2, 'L': 1}
-num_of_drones_1 = 7
-num_of_swarms_1 = 2
-max_reward_1 = num_of_swarms_1 * num_of_drones_1 * sum(pests_1[p] for p in pests_1)
-requirement_1 = 150  # for A*
-gamma_1 = 0.95
+def get_instance_1():
+    horizon_1 = 8
+    probs_1 = {'a11': {'M': 0.0, 'L': 0},
+               'a12': {'M': 0.0, 'L': 0.3},
+               'a13': {'M': 0.4, 'L': 0.0},
+               'a14': {'M': 0.2, 'L': 0.1},
+               'a21': {'M': 0.0, 'L': 0.3},
+               'a22': {'M': 0.0, 'L': 0.0},
+               'a23': {'M': 0.6, 'L': 0.0},
+               'a24': {'M': 0.3, 'L': 0.5},
+               'a31': {'M': 0.0, 'L': 0.0},
+               'a32': {'M': 0.5, 'L': 0.2},
+               'a33': {'M': 0.0, 'L': 0.3},
+               'a34': {'M': 0.0, 'L': 0.0},
+               'a41': {'M': 0.1, 'L': 0.0},
+               'a42': {'M': 0.0, 'L': 0.2},
+               'a43': {'M': 0.8, 'L': 0.2},
+               'a44': {'M': 0.0, 'L': 0.0}
+               }
+    width_1 = 4
+    height_1 = 4
+    pests_1 = {'M': 2, 'L': 1}
+    num_of_drones_1 = 7
+    num_of_swarms_1 = 2
+    max_reward_1 = num_of_swarms_1 * num_of_drones_1 * sum(pests_1[p] for p in pests_1)
+    requirement_1 = 150  # for A*
+    gamma_1 = 0.95
+    return width_1, height_1, horizon_1, pests_1, probs_1, num_of_drones_1, num_of_swarms_1, max_reward_1, \
+           requirement_1, gamma_1
+
+
+def get_instance_2():
+    horizon_2 = 15
+    probs_2 = {'a11': { 'L': 0},
+               'a12': { 'L': 0},
+               'a13': { 'L': 0},
+               'a14': { 'L': 0},
+               'a15': { 'L': 0.05},
+               'a16': { 'L': 0.2},
+               'a17': { 'L': 0.05},
+               'a21': { 'L': 0.2},
+               'a22': { 'L': 0.05},
+               'a23': { 'L': 0.0},
+               'a24': { 'L': 0.0 },
+               'a25': { 'L': 0.2},
+               'a26': { 'L': 0.5},
+               'a27': { 'L': 0.2},
+               'a31': { 'L': 0.5},
+               'a32': { 'L': 0.2},
+               'a33': { 'L': 0.05},
+               'a34': { 'L': 0.2},
+               'a35': { 'L': 0.1},
+               'a36': { 'L': 0.2},
+               'a37': { 'L': 0.05},
+               'a41': { 'L': 0.2},
+               'a42': { 'L': 0.05},
+               'a43': { 'L': 0.2},
+               'a44': { 'L': 0.5},
+               'a45': { 'L': 0.2},
+               'a46': { 'L': 0},
+               'a47': { 'L': 0},
+               'a51': { 'L': 0},
+               'a52': { 'L': 0},
+               'a53': { 'L': 0.05},
+               'a54': { 'L': 0.2},
+               'a55': { 'L': 0.05},
+               'a56': { 'L': 0},
+               'a57': { 'L': 0},
+               'a61': { 'L': 0},
+               'a62': { 'L': 0.05},
+               'a63': { 'L': 0.2},
+               'a64': { 'L': 0.05},
+               'a65': { 'L': 0},
+               'a66': { 'L': 0.05},
+               'a67': { 'L': 0.2},
+               'a71': {'L': 0},
+               'a72': {'L': 0.2},
+               'a73': {'L': 0.5},
+               'a74': {'L': 0.2},
+               'a75': {'L': 0},
+               'a76': {'L': 0.2},
+               'a77': {'L': 0.5}
+
+               }
+    width_2 = 7
+    height_2 = 7
+    pests_2 = {'L': 1}
+    num_of_drones_2 = 10
+    num_of_swarms_2 = 4
+    max_reward_2 = num_of_swarms_2 * num_of_drones_2 * sum(pests_2[p] for p in pests_2)
+    requirement_2 = 150  # for A*
+    gamma_2 = 0.98
+    return width_2, height_2, horizon_2, pests_2, probs_2, num_of_drones_2, num_of_swarms_2, max_reward_2, \
+           requirement_2, gamma_2
+
 
 HOR = 10
 size_x = 7
@@ -153,8 +223,7 @@ gamma = 0.9
 max_reward = 2 * 4 * sum(pests_2[p] for p in pests_2)  # 18
 
 # problem = search.SingleSwarmProblem(HOR, size_x, size_y, pests_1, probs3, max_reward, num_of_drones)
-problem = search.MultiSwarmProblem(width_1, height_1, horizon_1, pests_1, probs_1, num_of_drones_1, num_of_swarms_1,
-                                   max_reward_1, requirement_1, gamma_1)
+problem = search.MultiSwarmProblem(*get_instance_2())
 
 mcts.monte_carlo_tree_search(problem, 100000)
 # search.astar_search(problem, problem.h)
