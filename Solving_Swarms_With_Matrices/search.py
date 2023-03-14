@@ -1,10 +1,3 @@
-"""
-Search (Chapters 3-4)
-
-The way to use this code is to subclass Problem to create a class of problems,
-then create problem instances and solve them with calls to the various search
-functions.
-"""
 
 import sys
 from collections import deque
@@ -179,11 +172,11 @@ def astar_search(problem, h=None, display=False):
     return best_first_graph_search(problem, lambda n: n.path_cost + h(n), display)
 
 class SingleSwarmProblem(Problem):
-    def __init__(self, HOR, size_x, size_y, pests, probs, max_reward, num_of_drones):
+    def __init__(self, HOR, width, height, pests, probs, max_reward, num_of_drones):
         super().__init__(tuple(['X'] * HOR))
         self.HOR = HOR
-        self.size_x = size_x
-        self.size_y = size_y
+        self.width = width
+        self.height = height
         self.pests = pests
         self.probs = probs
         self.max_reward = max_reward
@@ -221,11 +214,11 @@ class SingleSwarmProblem(Problem):
             acts = []#['No-op']
             x = self.get_x(state)
             y = self.get_y(state)
-            if x < self.size_x-1:
+            if x < self.width-1:
                 acts.append('Right')
             if x >= 1:
                 acts.append('Left')
-            if y < self.size_y-1:
+            if y < self.height-1:
                 acts.append('Up')
             if y >= 1:
                 acts.append('Down')
@@ -390,11 +383,11 @@ class SingleSwarmProblem(Problem):
 
 
 class MultiSwarmProblem(Problem):
-    def __init__(self, size_x, size_y, HOR, pests, probs, num_of_drones, num_of_swarms, max_reward, requirement, gamma):
+    def __init__(self, width, height, HOR, pests, probs, num_of_drones, num_of_swarms, max_reward, requirement, gamma):
         super().__init__(tuple(tuple('X' for k in range(HOR)) for j in range(num_of_swarms)))
         self.HOR = HOR
-        self.size_x = size_x
-        self.size_y = size_y
+        self.width = width
+        self.height = height
         self.pests = pests
         self.probs = probs
         self.max_reward = max_reward
@@ -403,29 +396,36 @@ class MultiSwarmProblem(Problem):
         self.requirement = requirement
         self.gamma = gamma
 
-    def get_x(self, state):
+    def get_x(self, short_state):
         rights = 0
         lefts = 0
         for i in range(self.HOR):
-            if state[i] == 'Left':
+            if short_state[i] == 'Left':
                 lefts += 1
-            if state[i] == 'Right':
+            if short_state[i] == 'Right':
                 rights += 1
-            if state[i] == 'X':
+            if short_state[i] == 'X':
                 break
         return rights - lefts
 
-    def get_y(self, state):
+    def get_y(self, short_state):
         ups = 0
         downs = 0
         for i in range(self.HOR):
-            if state[i] == 'Up':
+            if short_state[i] == 'Up':
                 ups += 1
-            if state[i] == 'Down':
+            if short_state[i] == 'Down':
                 downs += 1
-            if state[i] == 'X':
+            if short_state[i] == 'X':
                 break
         return ups - downs
+
+    def get_area(self, short_state):
+        area = 'a'+str(self.get_x(short_state)+1)+str(self.get_y(short_state)+1)
+        if area not in self.probs:
+            raise Exception('AAAAAAAAAA')
+        return area
+
 
     def actions(self, full_state):
         """Up, Down, Left, Right minus boundaries"""
@@ -434,11 +434,11 @@ class MultiSwarmProblem(Problem):
             if full_state[swarm][-1] == 'X':
                 x = self.get_x(full_state[swarm])
                 y = self.get_y(full_state[swarm])
-                if x < self.size_x-1:
+                if x < self.width-1:
                     actions_for_swarm[swarm].append('Right')
                 if x >= 1:
                     actions_for_swarm[swarm].append('Left')
-                if y < self.size_y-1:
+                if y < self.height-1:
                     actions_for_swarm[swarm].append('Up')
                 if y >= 1:
                     actions_for_swarm[swarm].append('Down')
@@ -462,7 +462,7 @@ class MultiSwarmProblem(Problem):
         for pest in self.pests:
             for area in self.probs:
                 expectation += self.pests[pest] * self.probs[area][pest]
-        return expectation / self.size_x / self.size_y*self.num_of_drones*self.num_of_swarms
+        return expectation / self.width / self.height*self.num_of_drones*self.num_of_swarms
 
     def actions_to_areas(self, full_state):
         full_areas = [['X' for k in range(self.HOR)]for s in range(self.num_of_swarms)]
