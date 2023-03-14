@@ -1,4 +1,3 @@
-
 import sys
 from collections import deque
 
@@ -421,7 +420,7 @@ class MultiSwarmProblem(Problem):
         return ups - downs
 
     def get_area(self, short_state):
-        area = 'a'+str(self.get_x(short_state)+1)+str(self.get_y(short_state)+1)
+        area = tuple(self.get_x(short_state)), str(self.get_y(short_state))
         if area not in self.probs:
             raise Exception('AAAAAAAAAA')
         return area
@@ -465,33 +464,26 @@ class MultiSwarmProblem(Problem):
         return expectation / self.width / self.height*self.num_of_drones*self.num_of_swarms
 
     def actions_to_areas(self, full_state):
-        full_areas = [['X' for k in range(self.HOR)]for s in range(self.num_of_swarms)]
-        latest = ['a11' for s in range(self.num_of_swarms)]
+        full_areas = [[(None, None) for t in range(self.HOR)]for s in range(self.num_of_swarms)]
+        latest = [(0, 0) for s in range(self.num_of_swarms)]
         for swarm in range(self.num_of_swarms):
             for time in range(self.HOR):
                 full_areas[swarm][time] = latest[swarm]
                 match full_state[swarm][time]:
                     case 'Up':
-                        latest[swarm] = list(latest[swarm])
-                        latest[swarm][2] = str(int(latest[swarm][2])+1)
-                        latest[swarm] = ''.join(latest[swarm])
+                        latest[swarm] = (latest[swarm][0], latest[swarm][1]+1)
                     case 'Down':
-                        latest[swarm] = list(latest[swarm])
-                        latest[swarm][2] = str(int(latest[swarm][2])-1)
-                        latest[swarm] = ''.join(latest[swarm])
+                        latest[swarm] = (latest[swarm][0], latest[swarm][1]-1)
+
                     case 'Right':
-                        latest[swarm] = list(latest[swarm])
-                        latest[swarm][1] = str(int(latest[swarm][1])+1)
-                        latest[swarm] = ''.join(latest[swarm])
+                        latest[swarm] = (latest[swarm][0]+1, latest[swarm][1])
                     case 'Left':
-                        latest[swarm] = list(latest[swarm])
-                        latest[swarm][1] = str(int(latest[swarm][1])-1)
-                        latest[swarm] = ''.join(latest[swarm])
+                        latest[swarm] = (latest[swarm][0]-1, latest[swarm][1])
+
                     case 'No-op':
                         latest[swarm] = latest[swarm]
                     case other:  # ('X')
                         break
-
         return full_areas
 
     def get_prob_of_subset(self, subset, probs):
@@ -556,7 +548,7 @@ class MultiSwarmProblem(Problem):
             matrices[swarm][self.num_of_drones][0] = 1
 
         for time in range(self.HOR):
-            if areas[0][time] == 'X':
+            if areas[0][time] == (None, None):
                 break
             for swarm in range(self.num_of_swarms):
                 # checking for already visited areas
