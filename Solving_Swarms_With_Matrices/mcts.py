@@ -145,6 +145,9 @@ def monte_carlo_tree_search(problem, number_of_simulations):
     print()
     node = root
     while not node.is_terminal(problem):
+        if node.number_of_visits == 0:
+            break
+            print("The tree has no terminal leaves. Try more simulations or smaller exploration rate.")
         node = get_best_child(node)
     print('Number of simulations: ', number_of_simulations)
     print('Number of drones: ', problem.num_of_drones)
